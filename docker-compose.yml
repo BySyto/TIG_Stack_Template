@@ -37,8 +37,28 @@ services:
       - /home/grafana/tig/telegraf/telegraf.conf:/etc/telegraf/telegraf.conf
     privileged: true
 
+  grafana:
+    image: grafana/grafana:7.5.9
+    depends_on:
+      - influxdb
+    container_name: grafana
+    restart: always
+    networks:
+      - lan
+    ports:
+      - 3000:3000
+    links:
+      - influxdb:influxdb
+    environment:
+      GF_INSTALL_PLUGINS: "grafana-clock-panel, grafana-influxdb-08-datasource, grafana-kairosdb-datasource, grafana-piechart-panel, grafana-simple-json-datasource, grafana-worldmap-panel"
+      GF_SECURITY_ADMIN_USER: admin  # nom de l'utilisateur créé par défaut pour accéder à Grafana
+      GF_SECURITY_ADMIN_PASSWORD: admin  # mot de passe de l'utilisateur créé par défaut pour accéder à Grafana
+    volumes:
+      - grafana-data:/var/lib/grafana
+
 volumes:
   influxdb-data:
+  grafana-data:
 
 networks:
   lan:
